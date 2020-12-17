@@ -26,18 +26,6 @@ class EditUser extends LitElement {
 
 	static get styles() {
 		return css`
-			.row {
-				display: flex;
-			}
-			.column {
-				width: 50%;
-				padding: 100px;
-			}
-			li {
-				cursor: pointer;
-				font-size: 22px;
-				margin-bottom: 10px;
-			}
 			.form-field {
 				padding: 10px;
 			}
@@ -50,11 +38,9 @@ class EditUser extends LitElement {
 		const form = e.target;
 
 		// Validation of of the request is left to the server
-		let url = `api/updateUser.php?id=${this.user.uid}?firstName=${this.user.firstName}?lastName=${this.user.lastName}`;
-		// Only send the username if old password was given
-		if (this.user.oldPwd)
-			url += `?uname=${this.user.uname}?oldPwd=${this.user.oldPwd}`;
-    if (this.user.newPwd) url += "?pwd=" + this.user.newPwd;
+		let url = `api/updateUser.php?id=${this.user.uid}?firstName=${this.user.firstName}?lastName=${this.user.lastName}?uname=${this.user.uname}`;
+		if (this.user.oldPwd) url += `oldPwd=${this.user.oldPwd}`;
+		if (this.user.newPwd) url += `?pwd=${this.user.newPwd}`;
 
 		const res = await fetch(url, {
 			method: "POST",
@@ -62,7 +48,7 @@ class EditUser extends LitElement {
 				Accept: "application/json",
 				"Content-Type": "application/json",
 			},
-    });
+		});
 
 		// Reset form if successful, or alert the user if unsuccessful
 		if (res.status === "success") {
@@ -73,6 +59,7 @@ class EditUser extends LitElement {
 	}
 
 	render() {
+		// NOTE: The use of the "value" attribute to give default values to fields of the form, so that the user does not have retype their own username or name
 		return html`
 			<form @submit="${(e) => this.submit(e)}">
 				<div class="form-field">
@@ -91,7 +78,8 @@ class EditUser extends LitElement {
 						@change="${(e) => (this.user.firstName = e.srcElement.value)}"
 						type="text"
 						name="firstName"
-						value="${this.user.firstName}"
+            value="${this.user.firstName}"
+            required
 					/>
 				</div>
 				<div class="form-field">
@@ -100,7 +88,8 @@ class EditUser extends LitElement {
 						@change="${(e) => (this.user.lastName = e.srcElement.value)}"
 						type="text"
 						name="lastName"
-						value="${this.user.lastName}"
+            value="${this.user.lastName}"
+            required
 					/>
 				</div>
 				<div class="form-field">
